@@ -1,10 +1,7 @@
 class Move
-  VALUES = ['Rock', 'Paper', 'Scissors', 'Lizard', 'Spock']
-  attr_reader :value
-
-  def initialize(value)
-    @value = value
-  end
+  MENU = { 1 => 'Rock', 2 => 'Paper', 3 => 'Scissors', 4 => 'Lizard',
+             5 => 'Spock' }
+  attr_reader :value, :win_against
 
   def >(other)
     win_against.include?(other.value)
@@ -20,46 +17,36 @@ class Move
 end
 
 class Rock < Move
-  attr_reader :win_against
-
   def initialize
-    super('Rock')
+    @value = 'Rock'
     @win_against = ['Scissors', 'Lizard']
   end
 end
 
 class Paper < Move
-  attr_reader :win_against
-
   def initialize
-    super('Paper')
+    @value = 'Paper'
     @win_against = ['Rock', 'Spock']
   end
 end
 
 class Scissors < Move
-  attr_reader :win_against
-
   def initialize
-    super('Scissors')
+    @value = 'Scissors'
     @win_against = ['Paper', 'Lizard']
   end
 end
 
 class Lizard < Move
-  attr_reader :win_against
-
   def initialize
-    super('Lizard')
+    @value = 'Lizard'
     @win_against = ['Spock', 'Paper']
   end
 end
 
 class Spock < Move
-  attr_reader :win_against
-
   def initialize
-    super('Spock')
+    @value = 'Spock'
     @win_against = ['Scissors', 'Rock']
   end
 end
@@ -79,6 +66,7 @@ class RPSGame
 
   def display_welcome_message
     puts "\nWelcome to Rock, Paper, Scissors, Lizard & Spock!"
+    puts "\nFirst player to reach #{MAX_SCORE} wins!"
   end
 
   def display_goodbye_message
@@ -86,19 +74,19 @@ class RPSGame
   end
 
   def display_choices
-    puts "\n#{human.name} chose #{human.move}"
-    puts "#{computer.name} chose #{computer.move}"
+    puts "\n   #{human.name} chose #{human.move}"
+    puts "   #{computer.name} chose #{computer.move}"
   end
 
   def tension
-  puts('1..')
-  sleep(0.5)
-  puts('2..')
-  sleep(0.5)
-  puts('3...')
-  sleep(0.5)
-  puts 'SHOOT!'
-end
+    puts("\n   1..")
+    sleep(0.5)
+    puts('   2..')
+    sleep(0.5)
+    puts('   3...')
+    sleep(0.5)
+    puts '   SHOOT!'
+  end
 
   def human_wins?
     human.move > computer.move
@@ -125,9 +113,9 @@ end
   end
 
   def display_winner
-    puts "\n#{human.name} won!" if human_wins?
-    puts "\n#{computer.name} won!" if computer_wins?
-    puts "\nIt's a tie!" if !human_wins? && !computer_wins?
+    puts "\n   #{human.name} won!" if human_wins?
+    puts "\n   #{computer.name} won!" if computer_wins?
+    puts "\n   It's a tie!" if !human_wins? && !computer_wins?
   end
 
   def display_scores
@@ -167,6 +155,7 @@ end
   end
 
   def self.history
+    system('clear') || system('cls')
     history_title_strip
     @@history.each_slice(3) { |move| show_line(move) }
   end
@@ -207,17 +196,18 @@ class Player
   end
 
   def move_history
-    RPSGame.move_history.select { |pair| pair[0] == name }
+    RPSGame.move_history.each_slice(3)
   end
 
   def history
+    system('clear') || system('cls')
     moves = move_history
     puts
     puts "PLAYER HISTORY:"
-    puts "Player".ljust(10) + "Move".ljust(10)
-    puts "-" * 20
-    moves.each do |pair|
-      puts pair[0][0..8].ljust(10) + pair[1].ljust(10)
+    puts "Player".ljust(10) + "Move".ljust(10) + "W/L".ljust(10)
+    puts "-" * 30
+    moves.each do |move|
+      puts move[0][0][0..8].ljust(10) + move[0][1].ljust(10) + move[2]
     end
   end
 end
@@ -228,22 +218,39 @@ class Human < Player
     loop do
       print "\nWhat's your name?  "
       n = gets.chomp
-      break unless n.empty?
+      break unless n.strip.empty?
       puts "Sorry, must enter a value."
     end
     self.name = n
   end
 
+  def choice_menu
+    puts "\n   Please choose from the following: "
+    puts "   1) Rock"
+    puts "   2) Paper"
+    puts "   3) Scissors"
+    puts "   4) Lizard"
+    puts "   5) Spock"
+    puts "   6) Player History"
+    puts "   7) Game History"
+  end
+
+  def print_history_or_invalid(choice)
+    history if choice == 6
+    RPSGame.history if choice == 7
+    puts "Sorry, invalid choice." if ![6, 7].include?(choice)
+  end
+
   def choose
     choice = nil
     loop do
-      puts
-      print "Please choose rock, paper, scissors, lizard or spock:  "
-      choice = gets.chomp.capitalize
-      break if Move::VALUES.include?(choice)
-      puts "Sorry, invalid choice."
+      choice_menu
+      print "=> "
+      choice = gets.chomp.to_i
+      break if Move::MENU.keys.include?(choice)
+      print_history_or_invalid(choice)
     end
-    self.move = Object.const_get(choice).new
+    self.move = Object.const_get(Move::MENU[choice]).new
     RPSGame.add_to_history([name, move.to_s])
   end
 end
@@ -254,8 +261,55 @@ class Computer < Player
   end
 
   def choose
-    self.move = Object.const_get(Move::VALUES.sample).new
+    case name
+    when 'R2D2' 
+      choice = r2d2_logic
+    when 'C3PO'
+      choice = c3po_logic
+    when 'Hal'
+      choice = hal_logic
+    when 'Chappie'
+      choice = chappie_logic
+    when 'Number 5'
+      choice = number_5_logic
+    end
+    self.move = Object.const_get(choice).new
     RPSGame.add_to_history([name, move.to_s])
+  end
+
+  private
+
+  def r2d2_logic
+    'Rock'
+  end
+
+  def c3po_logic
+    ['Rock', 'Paper', 'Scissors'].sample
+  end
+
+  def hal_logic
+    case rand(99)
+    when 0..45 then "Scissors"
+    when 46..70 then "Lizard"
+    when 71..85 then "Spock"
+    else
+      "Rock"
+    end
+  end
+
+  def chappie_logic
+    case rand(99)
+    when 0..20 then "Rock"
+    when 21..40 then "Paper"
+    when 41..60 then "Lizard"
+    when 61-99 then "Spock"
+    else
+      "Scissors"
+    end
+  end
+
+  def number_5_logic
+    ['Spock', 'Lizard'].sample
   end
 end
 
