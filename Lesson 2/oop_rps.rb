@@ -61,14 +61,6 @@ class Player
     @score = 0
   end
 
-  def clearscreen
-    system('clear') || system('cls')
-  end
-
-  def move_history
-    RPSGame.move_history.each_slice(3)
-  end
-
   def history
     clearscreen
     moves = move_history
@@ -80,6 +72,14 @@ class Player
   end
 
   private
+
+  def clearscreen
+    system('clear') || system('cls')
+  end
+
+  def move_history
+    RPSGame.move_history.each_slice(3)
+  end
 
   def print_history_line(move)
     puts move[0][0][0..8].ljust(10) + move[0][1].ljust(10) + move[2]
