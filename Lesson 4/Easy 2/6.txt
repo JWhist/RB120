@@ -1,0 +1,18 @@
+If I have the following class:
+
+class Television
+  def self.manufacturer
+    # method logic
+  end
+
+  def model
+    # method logic
+  end
+end
+
+Which one of these is a class method (if any) and how do you know? How would you call a class method?
+
+Television::manufacturer is a class method, as it is defined using the 'self' keyword, it will be called upon the class itself - akin to writing 'Television.manufacturer'.  This is how it is called in practice:
+
+Television.manufacturer (preferred) or 
+Television::manufacturer

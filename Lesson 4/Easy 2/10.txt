@@ -1,0 +1,6 @@
+What are the benefits of using Object Oriented Programming in Ruby? Think of as many as you can.
+
+Abstraction - This allows you to name and think of objects in terms of real life objects, which makes your code easier to understand and allows for more complexity.
+Inheritance - The reusability of methods through inheritance can save a lot of work in repeating yourself (DRY)
+Encapsulation - OOP allows objects to keep some information more secure than traditional procedural programming might through the use of private methods and instance variables.
+Polymorphism - The ability to redefine methods of the same name for different classes to function differently but achieve similar results depending on the class makes code more readable and understandable (for instance, the 'to_s' method).

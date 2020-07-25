@@ -1,0 +1,26 @@
+If we have a class such as the one below:
+
+class Cat
+  @@cats_count = 0
+
+  def initialize(type)
+    @type = type
+    @age  = 0
+    @@cats_count += 1
+  end
+
+  def self.cats_count
+    @@cats_count
+  end
+end
+
+Explain what the @@cats_count variable does and how it works. What code would you need to write to test your theory?
+
+Each time a Cat object is instantiated, the @@cats_count class variable is incremented by one.  This keeps a running count of total Cat objects created.  Cat::cats_count class method is used as a getter method to return the value of @@cats_count.  This code could be tested as follows:
+
+Cat.cats_count  => 0
+kitty = Cat.new('stray')
+Cat.cats_count => 1
+kitty.cats_count => Error, undefined method etc.
+paws = Cat.new('Siamese')
+Cat.cats_count => 2

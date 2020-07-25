@@ -1,0 +1,19 @@
+You are given the following code:
+
+class Oracle
+  def predict_the_future
+    "You will " + choices.sample
+  end
+
+  def choices
+    ["eat a nice lunch", "take a nap soon", "stay at work late"]
+  end
+end
+
+What is the result of executing the following code:
+
+oracle = Oracle.new
+oracle.predict_the_future
+
+A new Oracle object is created and assigned to the variable 'oracle'.  Then the Oracle#predict_the_future method is invoked on that object.  This method returns a string consisting of "You will " and the result a sample of the return array from the Oracle#choice method.  No explicit print or puts call is made though, so nothing will be noticed by the user.
+

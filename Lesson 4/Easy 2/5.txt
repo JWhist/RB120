@@ -1,0 +1,9 @@
+There are a number of variables listed below. What are the different types and how do you know which is which?
+
+excited_dog = "excited dog"
+@excited_dog = "excited dog"
+@@excited_dog = "excited dog"
+
+The first is a local variable, defined and scoped within a block or method.
+The second is an instance variable, defined in an instance method.
+The third is a class variable, defined and scoped at the class level, and accessible at any lower scope, similar to a constant.
