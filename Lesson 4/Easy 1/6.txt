@@ -1,0 +1,14 @@
+What could we add to the class below to access the instance variable @volume?
+
+class Cube
+  def initialize(volume)
+    @volume = volume
+  end
+end
+
+Because there is no attr_reader or attr_accessor called on @volume, we need to manually create a getter method.  To do this we could write a method:
+
+    def volume
+      @volume
+    end
+

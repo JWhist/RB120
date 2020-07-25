@@ -1,0 +1,5 @@
+
+
+What is the default return value of to_s when invoked on an object? Where could you go to find out if you want to be sure?
+
+The default value of to_s when called on an OBJECT is a string containing the object's class and an encoding of the object id separated by a ':'.  This can be found in the ruby documentation for Object#to_s.

@@ -1,0 +1,15 @@
+Which of these two classes has an instance variable and how do you know?
+
+class Fruit
+  def initialize(name)
+    name = name
+  end
+end
+
+class Pizza
+  def initialize(name)
+    @name = name
+  end
+end
+
+the Pizza class has an instance variable denoted by the @ in front of the variable 'name' set in the intialize method to parameter 'name'.  You could also identify the class variables by the various attr_* calls in the class.

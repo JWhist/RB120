@@ -1,0 +1,16 @@
+
+
+If we have the class below, what would you need to call to create a new instance of this class.
+
+class Bag
+  def initialize(color, material)
+    @color = color
+    @material = material
+  end
+end
+
+Because the initialize method here expects two parameters, you would need to call:
+
+Bag.new('Red', 'Burlap')
+
+or some other combination of appropriate values for the arguments.
