@@ -1,0 +1,56 @@
+If we have this code:
+
+class Greeting
+  def greet(message)
+    puts message
+  end
+end
+
+class Hello < Greeting
+  def hi
+    greet("Hello")
+  end
+end
+
+class Goodbye < Greeting
+  def bye
+    greet("Goodbye")
+  end
+end
+
+What happens in each of the following cases:
+
+case 1:
+
+hello = Hello.new
+hello.hi
+
+case 2:
+
+hello = Hello.new
+hello.bye
+
+case 3:
+
+hello = Hello.new
+hello.greet
+
+case 4:
+
+hello = Hello.new
+hello.greet("Goodbye")
+
+case 5:
+
+Hello.hi
+
+case 1:  hello.hi calls the 'hi' method from the Hello class.
+=> "Hello"
+case 2:  hello.bye calls the 'bye' method from the Hello class.
+=> Undef method Error
+case 3:  hello.greet calls the 'greet' method from the Greeting class since it does not exist within the Hello class.
+=> Missing argument error (0 for 1 expected)
+case 4: hello.greet('Goodbye') calls the 'greet' method from the Greeting class since it does not exist within the Hello class.
+=> "Goodbye"
+case 5: Hello.hi calls the class method 'hi' from the Hello class.
+=> Undef method Error 
