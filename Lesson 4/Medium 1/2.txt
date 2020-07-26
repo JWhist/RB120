@@ -1,0 +1,28 @@
+Alan created the following code to keep track of items for a shopping cart application he's writing:
+
+class InvoiceEntry
+  attr_reader :quantity, :product_name
+
+  def initialize(product_name, number_purchased)
+    @quantity = number_purchased
+    @product_name = product_name
+  end
+
+  def update_quantity(updated_count)
+    # prevent negative quantities from being set
+    quantity = updated_count if updated_count >= 0
+  end
+end
+
+Alyssa looked at the code and spotted a mistake. "This will fail when update_quantity is called", she says.
+
+Can you spot the mistake and how to address it?
+
+Because @quantity is set as attr_reader only, the update_quantity method will not find a setter method and instead will try to initialize a new local variable within the method.  He needs to change the line 2 to:
+
+attr_reader :product_name, :quantity
+private
+attr_writer :quantity
+
+This will allow the method to set the value, but not other random users.
+
