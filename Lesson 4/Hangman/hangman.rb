@@ -45,9 +45,9 @@ class Human < Player
   def choice
     answer = ''
     loop do
-      puts "1) Enter a letter"
+      puts "\n1) Enter a letter"
       puts "2) Guess word"
-      print "=> "
+      print "\nPlease choose 1 or 2: "
       answer = gets.chomp.to_i
       break if [1, 2].include?(answer)
     end
@@ -55,6 +55,7 @@ class Human < Player
     when 1 then self.pick_letter
     when 2 then self.pick_word
     end
+    answer
   end
 
   def pick_letter
@@ -84,9 +85,16 @@ class Human < Player
     self.guess = answer
   end
 
-  def bad_guess
+  def bad_letter_guess
     self.number_of_guesses += 1
     puts  "\nThere aren't any #{self.letter}'s in the word!"
+    puts "\n<Press any key to continue>"
+    gets
+  end
+
+  def bad_word_guess
+    self.number_of_guesses += 1
+    puts "\n #{self.guess} is not the word!"
     puts "\n<Press any key to continue>"
     gets
   end
@@ -111,8 +119,6 @@ class Board
       computer.word.chars.each_with_index do |char, idx| 
         char == human.letter ? self.tiles[idx] = char : next
       end
-    else
-      human.bad_guess
     end
   end
 end
@@ -129,6 +135,7 @@ class HangManGame
   end
 
   def welcome
+    clearscreen
     puts "HANGMAN!  Try to guess the word before you run out of guesses!"
   end
   
@@ -138,11 +145,15 @@ class HangManGame
   end
   
   def letter_match?
-    computer.word.include?(player.letter)
+    computer.word.include?(human.letter)
   end
       
   def word_match?
-    computer.word == player.guess
+    computer.word == human.guess
+  end
+
+  def max_score
+    human.number_of_guesses == MAX
   end
 
   def computer_wins
@@ -161,16 +172,13 @@ class HangManGame
     loop do
       clearscreen
       board.show(human)
-      human.pick_letter
+      men = human.choice
       board.update(computer, human)
-      clearscreen
-      board.show(human)
-      human.pick_word
-      break if human.guess == computer.word || human.number_of_guesses == MAX
+      human.bad_letter_guess if men == 1 && !letter_match?
+      human.bad_word_guess if men == 2 && human.guess != computer.word
+      break if word_match? || max_score
     end
-    if human.guess == computer.word then human_wins
-    else computer_wins
-    end
+  word_match? ? human_wins : computer_wins
   puts "The word was: #{computer.word}"
   goodbye
   end
