@@ -1,0 +1,13 @@
+hang0: "    +======== I\n    I\n    I\n    I\n    I\n    I\n    I\n    I\n    I\n   /I\\\n =================="
+
+hang1: "    +======== I\n    I         O\n    I\n    I\n    I\n    I\n    I\n    I\n    I\n   /I\\\n =================="
+
+hang2: "    +======== I\n    I         O\n    I         +--\n    I\n    I\n    I\n    I\n    I\n    I\n   /I\\\n =================="
+
+hang3: "    +======== I\n    I         O\n    I       --+--\n    I\n    I\n    I\n    I\n    I\n    I\n   /I\\\n =================="
+
+
+hang4: "    +======== I\n    I         O\n    I       --+--\n    I         |\n    I\n    I\n    I\n    I\n    I\n   /I\\\n =================="
+
+
+hang5: "    +======== I\n    I         O\n    I       --+--\n    I         |\n    I        / \\\n    I\n    I\n    I\n    I\n   /I\\\n =================="

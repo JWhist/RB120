@@ -34,7 +34,7 @@ class Human < Player
   def name_yourself
     answer = ''
     loop do
-      puts "What is your name?"
+      print "What is your name?  "
       answer = gets.chomp
       break if answer.strip != ''
       puts "Please enter a name"
@@ -46,7 +46,7 @@ class Human < Player
     answer = ''
     loop do
       puts "\n1) Enter a letter"
-      puts "2) Guess word"
+      puts "2) Guess the word"
       print "\nPlease choose 1 or 2: "
       answer = gets.chomp.to_i
       break if [1, 2].include?(answer)
@@ -101,13 +101,27 @@ class Human < Player
 end
 
 class Board
+  require 'yaml'
+  GALLOWS = YAML.load_file('gallows.yml')
   attr_accessor :tiles
   
   def initialize(computer)
     @tiles = ('_' * computer.word.length).chars
   end
 
+  def show_gallows(human)
+    case human.number_of_guesses
+    when 0 then puts GALLOWS["hang0"]
+    when 1 then puts GALLOWS["hang1"]
+    when 2 then puts GALLOWS["hang2"]
+    when 3 then puts GALLOWS["hang3"]
+    when 4 then puts GALLOWS["hang4"]
+    when 5 then puts GALLOWS["hang5"]
+    end
+  end
+
   def show(human)
+    show_gallows(human)
     puts "\nAvailable letters:"
     puts "\n#{Player.alphabet}"
     puts "\n#{tiles.join(' ')}"
