@@ -32,11 +32,7 @@ module Messages
 
   def hit_or_stay_prompt
     player.show_hand
-    puts "Cash:   Wager: $#{player.wager}  Total Cash:    #{player.show_cash}"
-    puts
-    puts "You:    Wins:  #{player.wins} Current Hand:    #{player.hand_score}"
-    puts '---------------------------------------------'
-    puts "Dealer: Wins:  #{dealer.wins}"
+    one_card_score_line
     dealer.hand[0].show
     puts "\nHit or Stay?"
     puts "1) Hit"
@@ -61,6 +57,14 @@ module Messages
     puts "You:    Wins:  #{player.wins} Current Hand:    #{player.hand_score}"
     puts '---------------------------------------------'
     puts "Dealer: Wins:  #{dealer.wins} Current Hand:    #{dealer.hand_score}"
+  end
+
+  def one_card_score_line
+    puts "Cash:   Wager: $#{player.wager}  Total Cash:    #{player.show_cash}"
+    puts
+    puts "You:    Wins:  #{player.wins} Current Hand:    #{player.hand_score}"
+    puts '---------------------------------------------'
+    puts "Dealer: Wins:  #{dealer.wins}"
   end
 
   def blackjack_win_message
@@ -225,7 +229,6 @@ class TwentyOneGame
   def reset
     player.hand = []
     dealer.hand = []
-    winner = ''
     player.wager = 0
     @deck = Deck.new
     deck.shuffle!
@@ -250,7 +253,6 @@ class TwentyOneGame
   end
 
   def players_move!
-    input = ''
     loop do
       clear_screen
       hit_or_stay_prompt
@@ -328,27 +330,24 @@ class TwentyOneGame
 
   def blackjack_situation?
     if player.blackjack?
-      clear_screen
-      determine_winner
-      update_wins
-      update_cash_blackjack
-      show_table
-      blackjack_win_message
-      any_key
-      reset
+      finalize_blackjack
       return true
     elsif dealer.blackjack?
-      clear_screen
-      determine_winner
-      update_wins
-      update_cash_blackjack
-      show_table
-      blackjack_lose_message
-      any_key
-      reset
+      finalize_blackjack
       return true
     end
     false
+  end
+
+  def finalize_blackjack
+    clear_screen
+    determine_winner
+    update_wins
+    update_cash_blackjack
+    show_table
+    player.blackjack? ? blackjack_win_message : blackjack_lose_message
+    any_key
+    reset
   end
 
   def finalize
