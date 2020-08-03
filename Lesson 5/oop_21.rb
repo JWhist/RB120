@@ -39,6 +39,11 @@ module Messages
     puts "2) Stay"
   end
 
+  def one_or_two_please
+    puts "Please choose 1 or 2"
+    sleep(1)
+  end
+
   def prompt_for_wager
     answer = ''
     loop do
@@ -97,7 +102,11 @@ module Messages
   end
 
   def display_profits
-    splash_message("You made $#{format('%.2f', player.cash - 1000.00)}!!", 3)
+    if profits >= 0
+      splash_message("You made $#{format('%.2f', profits)}!!", 3)
+    else
+      splash_message("You lost $#{format('%.2f', -profits)}!!", 3)
+    end
   end
 end
 
@@ -274,22 +283,21 @@ class TwentyOneGame
     dealer.show_hand
   end
 
+  def hit_option
+    player.hit(deck)
+    puts "Dealing a card..."
+    sleep(0.75)
+  end
+
   def players_move!
     loop do
       clear_screen
       hit_or_stay_prompt
       return if player.busted?
       input = gets.chomp
-      case input
-      when '1'
-        player.hit(deck)
-        puts "Dealing a card..."
-        sleep(0.75)
-      when '2'then break
-      else
-        puts "Please choose 1 or 2"
-        sleep(1)
-      end
+      hit_option if input == '1'
+      break if      input == '2'
+      one_or_two_please if !['1', '2'].include?(input)
     end
   end
 
@@ -343,6 +351,10 @@ class TwentyOneGame
     player.reset_wins
     dealer.reset_wins
     player.cash = 1000.00
+  end
+
+  def profits
+    format('%.2f', player.cash - 1000.00).to_f
   end
 
   def play_again?
