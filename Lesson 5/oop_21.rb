@@ -217,6 +217,26 @@ class TwentyOneGame
   attr_accessor :player, :dealer, :winner
   attr_reader :deck
 
+  def play
+    loop do
+      clear_screen
+      prompt_for_wager
+      first_deal
+      if blackjack_situation?
+        game_over_quit? ? break : next
+      end
+      players_move!
+      if player.busted?
+        finalize
+        game_over_quit? ? break : next
+      end
+      dealers_move!
+      finalize
+      game_over_quit? ? break : next
+    end
+    goodbye
+  end
+
   def initialize
     @player = Player.new
     @dealer = Player.new
@@ -225,6 +245,8 @@ class TwentyOneGame
     deck.shuffle!
     welcome
   end
+
+  private
 
   def reset
     player.hand = []
@@ -375,30 +397,7 @@ class TwentyOneGame
     end
     false
   end
-
-  def play
-    loop do
-      clear_screen
-      prompt_for_wager
-      first_deal
-      if blackjack_situation?
-        game_over_quit? ? break : next
-      end
-      players_move!
-      if player.busted?
-        finalize
-        game_over_quit? ? break : next
-      end
-      dealers_move!
-      if dealer.busted?
-        finalize
-        game_over_quit? ? break : next
-      end
-      finalize
-      game_over_quit? ? break : next
-    end
-    goodbye
-  end
 end
 
-TwentyOneGame.new.play
+game = TwentyOneGame.new
+game.play
