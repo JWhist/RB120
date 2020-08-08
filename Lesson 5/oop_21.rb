@@ -92,9 +92,9 @@ module Messages
   end
 
   def display_grand_winner
-    if player.wins == Messages::MAX_SCORE
+    if player.wins == MAX_SCORE
       splash_message("You are first to #{MAX_SCORE} wins - congrats!", 3)
-    elsif dealer.wins == Messages::MAX_SCORE
+    elsif dealer.wins == MAX_SCORE
       splash_message("Dealer has #{MAX_SCORE} wins - you lose!", 3)
     else
       splash_message("You are broke!  You lose!", 3)
@@ -226,6 +226,15 @@ class TwentyOneGame
   attr_accessor :player, :dealer, :winner
   attr_reader :deck
 
+  def initialize
+    @player = Player.new
+    @dealer = Player.new
+    @deck = Deck.new
+    @winner = ''
+    deck.shuffle!
+    welcome
+  end
+
   def play
     loop do
       clear_screen
@@ -244,15 +253,6 @@ class TwentyOneGame
       game_over_quit? ? break : next
     end
     goodbye
-  end
-
-  def initialize
-    @player = Player.new
-    @dealer = Player.new
-    @deck = Deck.new
-    @winner = ''
-    deck.shuffle!
-    welcome
   end
 
   private
@@ -347,7 +347,7 @@ class TwentyOneGame
     player.wins >= Messages::MAX_SCORE || dealer.wins >= Messages::MAX_SCORE
   end
 
-  def reset_wins
+  def reset_wins_and_cash
     player.reset_wins
     dealer.reset_wins
     player.cash = 1000.00
@@ -404,7 +404,7 @@ class TwentyOneGame
     if max_score_reached? || player.broke?
       display_grand_winner
       display_profits
-      reset_wins
+      reset_wins_and_cash
       return !play_again?
     end
     false
