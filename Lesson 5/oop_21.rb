@@ -1,6 +1,4 @@
 module Messages
-  MAX_SCORE = 10
-
   def splash_message(text, duration)
     system('clear') || system('cls')
     top = "+-#{'-' * text.length}-+"
@@ -15,19 +13,17 @@ module Messages
   end
 
   def money_message
-    "How much money can you make before you reach #{MAX_SCORE} wins???"
+    score = TwentyOneGame::MAX_SCORE
+    "How much money can you make before you reach #{score} wins???"
   end
 
   def welcome
+    score = TwentyOneGame::MAX_SCORE
     splash_message('WELCOME TO TWENTY-ONE!', 2)
-    splash_message("First to #{MAX_SCORE} wins is the Grand Winner!", 2)
+    splash_message("First to #{score} wins is the Grand Winner!", 2)
     splash_message("Don't go broke or you lose!", 2)
     splash_message(money_message, 2)
-    splash_message("Blackjack plays 3:2!", 2)
-  end
-
-  def goodbye
-    puts "Goodbye!"
+    splash_message("Blackjack plays 3:2 !!", 2)
   end
 
   def hit_or_stay_prompt
@@ -45,6 +41,7 @@ module Messages
   end
 
   def prompt_for_wager
+    clear_screen
     answer = ''
     loop do
       puts "Total cash: #{player.show_cash}"
@@ -58,7 +55,6 @@ module Messages
 
   def score_line
     puts "Cash:   Wager: $#{player.wager}  Total Cash:    #{player.show_cash}"
-    puts
     puts "You:    Wins:  #{player.wins} Current Hand:    #{player.hand_score}"
     puts '---------------------------------------------'
     puts "Dealer: Wins:  #{dealer.wins} Current Hand:    #{dealer.hand_score}"
@@ -66,7 +62,6 @@ module Messages
 
   def one_card_score_line
     puts "Cash:   Wager: $#{player.wager}  Total Cash:    #{player.show_cash}"
-    puts
     puts "You:    Wins:  #{player.wins} Current Hand:    #{player.hand_score}"
     puts '---------------------------------------------'
     puts "Dealer: Wins:  #{dealer.wins}"
@@ -80,22 +75,31 @@ module Messages
     puts "\n****DEALER HAS BLACKJACK! YOU LOSE!****"
   end
 
+  def win_message
+    puts "**YOU WIN!**"
+  end
+
+  def lose_message
+    puts "**DEALER WINS!  YOU LOSE! **"
+  end
+
   def display_result_message
     case winner
     when 'Dealer'
-      puts "**DEALER WINS!  YOU LOSE! **"
+      dealer.blackjack? ? blackjack_lose_message : lose_message
     when 'Player'
-      puts "**YOU WIN!**"
+      player.blackjack? ? blackjack_win_message : win_message
     when 'Push'
       puts "**PUSH**"
     end
   end
 
   def display_grand_winner
-    if player.wins == MAX_SCORE
-      splash_message("You are first to #{MAX_SCORE} wins - congrats!", 3)
-    elsif dealer.wins == MAX_SCORE
-      splash_message("Dealer has #{MAX_SCORE} wins - you lose!", 3)
+    score = TwentyOneGame::MAX_SCORE
+    if player.wins == score
+      splash_message("You are first to #{score} wins - congrats!", 3)
+    elsif dealer.wins == score
+      splash_message("Dealer has #{score} wins - you lose!", 3)
     else
       splash_message("You are broke!  You lose!", 3)
     end
@@ -111,6 +115,7 @@ module Messages
 end
 
 module Scoreable
+  WIN_PIVOT = 21
   CARD_VALUES = {
     2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6, 7 => 7, 8 => 8,
     9 => 9, 10 => 10, 'J' => 10, 'Q' => 10, 'K' => 10, 'A' => 11
@@ -119,7 +124,7 @@ module Scoreable
   def hand_score
     hand_value = hand.inject(0) { |sum, card| sum + CARD_VALUES[card.value] }
     number_of_aces = hand.select { |card| card.value == 'A' }.count
-    while hand_value > 21
+    while hand_value > WIN_PIVOT
       break unless number_of_aces > 0
       hand_value -= 10
       number_of_aces -= 1
@@ -128,11 +133,11 @@ module Scoreable
   end
 
   def blackjack?
-    hand_score == 21
+    hand_score == WIN_PIVOT && hand.size == 2
   end
 
   def busted?
-    hand_score > 21
+    hand_score > WIN_PIVOT
   end
 
   def reset_wins
@@ -221,6 +226,8 @@ class Card
 end
 
 class TwentyOneGame
+  HOLD_PIVOT = 17
+  MAX_SCORE = 5
   include Messages
 
   attr_accessor :player, :dealer, :winner
@@ -237,18 +244,7 @@ class TwentyOneGame
 
   def play
     loop do
-      clear_screen
-      prompt_for_wager
-      first_deal
-      if blackjack_situation?
-        game_over_quit? ? break : next
-      end
-      players_move!
-      if player.busted?
-        finalize
-        game_over_quit? ? break : next
-      end
-      dealers_move!
+      play_round
       finalize
       game_over_quit? ? break : next
     end
@@ -256,6 +252,14 @@ class TwentyOneGame
   end
 
   private
+
+  def play_round
+    prompt_for_wager
+    first_deal
+    return if blackjack_situation?
+    players_move!
+    dealers_move! unless player.busted?
+  end
 
   def reset
     player.hand = []
@@ -306,7 +310,7 @@ class TwentyOneGame
       clear_screen
       show_table
       sleep(0.75)
-      dealer.hand_score < 17 ? dealer.hit(deck) : break
+      dealer.hand_score < HOLD_PIVOT ? dealer.hit(deck) : break
     end
   end
 
@@ -333,18 +337,19 @@ class TwentyOneGame
     dealer.wins += 1 if winner == 'Dealer'
   end
 
-  def update_cash_blackjack
-    player.cash += (1.5 * player.wager) if winner == 'Player'
-    player.cash -= player.wager if winner == 'Dealer'
-  end
-
   def update_cash
-    player.cash += player.wager if winner == 'Player'
-    player.cash -= player.wager if winner == 'Dealer'
+    if player.blackjack?
+      player.cash += player.wager * 1.5
+    elsif winner == 'Player'
+      player.cash += player.wager
+    elsif winner == 'Dealer'
+      player.cash -= player.wager
+    end
   end
 
   def max_score_reached?
-    player.wins >= Messages::MAX_SCORE || dealer.wins >= Messages::MAX_SCORE
+    score = TwentyOneGame::MAX_SCORE
+    player.wins >= score || dealer.wins >= score
   end
 
   def reset_wins_and_cash
@@ -363,25 +368,7 @@ class TwentyOneGame
   end
 
   def blackjack_situation?
-    if player.blackjack?
-      finalize_blackjack
-      return true
-    elsif dealer.blackjack?
-      finalize_blackjack
-      return true
-    end
-    false
-  end
-
-  def finalize_blackjack
-    clear_screen
-    determine_winner
-    update_wins
-    update_cash_blackjack
-    show_table
-    player.blackjack? ? blackjack_win_message : blackjack_lose_message
-    any_key
-    reset
+    player.blackjack? || dealer.blackjack?
   end
 
   def finalize
@@ -396,7 +383,7 @@ class TwentyOneGame
   end
 
   def any_key
-    puts "Press any key to continue"
+    puts "Press <enter> key to continue"
     gets
   end
 
@@ -408,6 +395,10 @@ class TwentyOneGame
       return !play_again?
     end
     false
+  end
+
+  def goodbye
+    puts "Goodbye!"
   end
 end
 

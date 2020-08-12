@@ -1,0 +1,41 @@
+
+Assignment: RPS Bonus Features
+
+Below are some ideas for features or additions to our Rock, Paper, Scissors game.
+
+    Keeping score
+
+    Right now, the game doesn't have very much dramatic flair. It'll be more interesting if we were playing up to, say, 10 points. Whoever reaches 10 points first wins. Can you build this functionality? We have a new noun -- a score. Is that a new class, or a state of an existing class? You can explore both options and see which one works better.
+
+    =>  First instinct is to add a module 'Scoreable' with methods to display the score and increment the score, as well as check the score
+        against a predetermined endpoint.  Include this module in the Player class.  Add ivar @score to Player class.
+
+    Add Lizard and Spock
+
+    This is a variation on the normal Rock Paper Scissors game by adding two more options - Lizard and Spock. The full explanation and rules are here.
+
+    =>  As before, change the logic of the determine winner method to use a hash instead of a slew of if then statements.  Make this hash a 
+        constant in the RPSGame class.
+
+    Add a class for each move
+
+    What would happen if we went even further and introduced 5 more classes, one for each move: Rock, Paper, Scissors, Lizard, and Spock. How would the code change? Can you make it work? After you're done, can you talk about whether this was a good design decision? What are the pros/cons?
+
+    =>  Not sure on this yet.
+
+    Keep track of a history of moves
+
+    As long as the user doesn't quit, keep track of a history of moves by both the human and computer. What data structure will you reach for? Will you use a new class, or an existing class? What will the display output look like?
+
+    =>  Add a class instance variable @@history consisting of an empty array, and a class method ::history that will display the contents
+        of this array.  For instance game = RPSGame.new, game.history =>  [[rock, paper], [scissors, rock]] etc. When the ivars are assigned their Move objects, simultaneously add a copy of that move object into the @@history array.
+
+    Computer personalities
+
+    We have a list of robot names for our Computer class, but other than the name, there's really nothing different about each of them. It'd be interesting to explore how to build different personalities for each robot. For example, R2D2 can always choose "rock". Or, "Hal" can have a very high tendency to choose "scissors", and rarely "rock", but never "paper". You can come up with the rules or personalities for each robot. How would you approach a feature like this?
+
+    =>  Add a modifier variable to the Computer subclass that would be used when selecting its move.  Use this as a means of adjusting the odds
+        of picking a certain symbol.  For instance, a conditional statement like - if rand(100) < MODIFIER then computer choice = 'rock'.  In 
+        this case a modifier of 80 would give an 80% chance of pulling rock etc.
+
+        This could be implemented by using a constant in the computer class that would be a hash of { 'name': modifier value} and upon instantiation, @modifier would be assigned CONSTANT[name] as a value.
