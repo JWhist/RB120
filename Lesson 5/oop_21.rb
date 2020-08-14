@@ -52,7 +52,8 @@ module Messages
 
   def wager_line
     pscore = player.hand_score
-    puts "Cash:   Wager: $#{player.wager}  Total Cash:    #{player.show_cash}"
+    wager = format('%.2f', player.wager)
+    puts "Cash:   Wager: $#{wager}  Total Cash:    #{player.show_cash}"
     puts "Wins:  Player:  #{player.wins}          Dealer:     #{dealer.wins}"
     puts "\nYour Cards:          Current Hand:     #{pscore}"
     player.show_hand
