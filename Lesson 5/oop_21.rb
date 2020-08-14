@@ -392,6 +392,7 @@ class TwentyOneGame
 
   def game_over_quit?
     if max_score_reached? || player.broke?
+      sleep(2)
       display_grand_winner
       display_profits
       reset_wins_and_cash
