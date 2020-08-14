@@ -27,12 +27,10 @@ module Messages
   end
 
   def hit_or_stay_prompt
-    player.show_hand
     one_card_score_line
-    dealer.hand[0].show
+    puts dealer.hand[0].show.join("\n")
     puts "\nHit or Stay?"
-    puts "1) Hit"
-    puts "2) Stay"
+    puts "1) Hit\n2) Stay"
   end
 
   def one_or_two_please
@@ -41,30 +39,34 @@ module Messages
   end
 
   def prompt_for_wager
-    clear_screen
     answer = ''
     loop do
-      puts "Total cash: #{player.show_cash}"
+      puts "\n\nTotal cash: #{player.show_cash}"
       print "How much do you want to wager?  "
       answer = gets.chomp.to_f
       break if answer > 0 && answer <= player.cash
-      puts "You must wager between $1 and $#{player.cash}."
+      puts "You must wager between $1 and $#{format('%.2f', player.cash)}."
     end
     player.wager = answer.round(2)
   end
 
-  def score_line
+  def wager_line
+    pscore = player.hand_score
     puts "Cash:   Wager: $#{player.wager}  Total Cash:    #{player.show_cash}"
-    puts "You:    Wins:  #{player.wins} Current Hand:    #{player.hand_score}"
+    puts "Wins:  Player:  #{player.wins}          Dealer:     #{dealer.wins}"
+    puts "\nYour Cards:          Current Hand:     #{pscore}"
+    player.show_hand
     puts '---------------------------------------------'
-    puts "Dealer: Wins:  #{dealer.wins} Current Hand:    #{dealer.hand_score}"
+  end
+
+  def score_line
+    wager_line
+    puts "Dealer Cards:          Current Hand:     #{dealer.hand_score}"
   end
 
   def one_card_score_line
-    puts "Cash:   Wager: $#{player.wager}  Total Cash:    #{player.show_cash}"
-    puts "You:    Wins:  #{player.wins} Current Hand:    #{player.hand_score}"
-    puts '---------------------------------------------'
-    puts "Dealer: Wins:  #{dealer.wins}"
+    wager_line
+    puts "Dealer Cards:"
   end
 
   def blackjack_win_message
@@ -139,10 +141,6 @@ module Scoreable
   def busted?
     hand_score > WIN_PIVOT
   end
-
-  def reset_wins
-    self.wins = 0
-  end
 end
 
 class Player
@@ -161,7 +159,13 @@ class Player
   end
 
   def show_hand
-    hand.each(&:show)
+    hand_display = Array.new(7) { [] }
+    hand.each do |card|
+      card.show.each_with_index do |row, idx|
+        hand_display[idx] << row
+      end
+    end
+    puts hand_display.map(&:join).join("\n")
   end
 
   def show_cash
@@ -170,6 +174,10 @@ class Player
 
   def broke?
     cash <= 0
+  end
+
+  def reset_wins
+    self.wins = 0
   end
 end
 
@@ -211,13 +219,15 @@ class Card
   end
 
   def show
-    puts "+---------+"
-    puts "|#{format('%-2s', suit)}       |"
-    puts "|         |"
-    puts "|   #{format('%2s', value)}    |"
-    puts "|         |"
-    puts "|      #{format('%2s', suit)} |"
-    puts "+---------+"
+    [
+      ["+---------+ "],
+      ["|#{format('%-2s', suit)}       | "],
+      ["|         | "],
+      ["|   #{format('%2s', value)}    | "],
+      ["|         | "],
+      ["|      #{format('%2s', suit)} | "],
+      ["+---------+ "]
+    ]
   end
 
   def to_s
@@ -282,7 +292,6 @@ class TwentyOneGame
   end
 
   def show_table
-    player.show_hand
     score_line
     dealer.show_hand
   end
@@ -378,13 +387,7 @@ class TwentyOneGame
     update_cash
     show_table
     display_result_message
-    any_key
     reset
-  end
-
-  def any_key
-    puts "Press <enter> key to continue"
-    gets
   end
 
   def game_over_quit?
