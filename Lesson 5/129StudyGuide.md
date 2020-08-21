@@ -9,7 +9,9 @@ Classes describe the attributes and behaviors of the objects that they create.
   ```
 
 #### Objects
-Objects in Ruby are anything that can hold a value, and are created by their classes. Objects are created by calling the `new` method on the class.  Objects contain *state*, which are the values of the attributes at any given moment, and *behavior*, which are the public methods available to the object as defined by its class.
+Objects in Ruby are anything that can hold a value, and are created by their classes. Objects are created by calling the `new` method on the class.
+##### States and Behaviors
+Objects contain *state*, which are the values of the attributes, which are represented by instance variables, at any given moment, and *behavior*, which are the public methods available to the object as defined by its class.  
 
 `new_object = Example.new`
 
