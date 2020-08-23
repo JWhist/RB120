@@ -46,7 +46,7 @@ end
 ## How to call setters and getters
 Getters and setters are instance methods, and are called by objects of the class that defines them.  
 ##### Within the class
-Public getters and setters can be called within the class by using either the method name along, or in combination with the `self` keyword.  For example:
+Public getters and setters can be called within the class by using either the method name alone, or in combination with the `self` keyword.  For example:
 
 ```
 class Example
