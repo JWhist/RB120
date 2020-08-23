@@ -43,9 +43,9 @@ end
 #### Public vs Private/Protected attr_*
 *If the attr_\* method is called below a private or protected keyword, those methods will also be private/protected as well.*
 
-## How to call setters and getters
+### How to call setters and getters
 Getters and setters are instance methods, and are called by objects of the class that defines them.  
-##### Within the class
+#### Within the class
 Public getters and setters can be called within the class by using either the method name alone, or in combination with the `self` keyword.  For example:
 
 ```
@@ -64,7 +64,7 @@ end
 
 When calling a setter method within the class, you must use the `self` keyword before the method invocation to avoid confusion with local variable assignment.
 
-##### Outside the class
+#### Outside the class
 Outside the class, getters and setters are invoked on the object of the respective class by appending the method to the objects pointer variable.  For example:
 
 ```
@@ -79,7 +79,7 @@ chewy.value = new_value
 
 *Appending a space between the method name and = sign is syntactical sugar for the Ruby language, and represents the syntax `chewy.value=(new_value)`.*  This can only be done with public attr_* methods.
 
-## Instance Methods vs Class Methods
+#### Instance Methods vs Class Methods
 Example:
 ```
 class Toyota
@@ -127,13 +127,13 @@ camry.factory_revenue
 NoMethodError (undefined method `factory_revenue' for #<Toyota:0x00005629fefccaf0 @make="Camry", @model=2014>)
 ```
 
-#### Referencing and setting instance variables vs using getters and setters
+## Referencing and setting instance variables vs using getters and setters
 Best practice is to avoid directly referencing the instance variable in your instance methods, with the exception of the `initialize` method.  Instance variables are referenced using the `@` symbol, ie `@var`.  
 When using setter method, the `self` keyword must be appended to the method call to distinguish between the setter method call and a local variable assignment.  Careful attention must also be paid to syntactical sugar such as `+=` method, as this can translate to `var=(var + new_value)`, and this may cause conflicts if the getter is private/undefined or multiple objects are involved.
 
 Outside of the class, public vs private/protected nature of methods must be taken into consideration.
 
-#### Class Inheritance
+## Class Inheritance
 Methods defined in a class are available to its child classes.  Child classes may define their own methods of the same name in order to overwrite those of their parent class.  This is known as *Duck typing*, a form of inheritance polymorphism in which methods of the same name are processed in a different way to achieve an expected result.
 
 Module methods are inherited between the object and its parent class.
