@@ -126,3 +126,81 @@ Toyota.factory_revenue
 camry.factory_revenue
 NoMethodError (undefined method `factory_revenue' for #<Toyota:0x00005629fefccaf0 @make="Camry", @model=2014>)
 ```
+
+#### Referencing and setting instance variables vs using getters and setters
+Best practice is to avoid directly referencing the instance variable in your instance methods, with the exception of the `initialize` method.  Instance variables are referenced using the `@` symbol, ie `@var`.  
+When using setter method, the `self` keyword must be appended to the method call to distinguish between the setter method call and a local variable assignment.  Careful attention must also be paid to syntactical sugar such as `+=` method, as this can translate to `var=(var + new_value)`, and this may cause conflicts if the getter is private/undefined or multiple objects are involved.
+
+Outside of the class, public vs private/protected nature of methods must be taken into consideration.
+
+#### Class Inheritance
+Methods defined in a class are available to its child classes.  Child classes may define their own methods of the same name in order to overwrite those of their parent class.  This is known as *Duck typing*, a form of inheritance polymorphism in which methods of the same name are processed in a different way to achieve an expected result.
+
+Module methods are inherited between the object and its parent class.
+
+## Encapsulation
+Encapsulation is the concept of hiding away code so that it cannot be accessed outside of the class.  This is done through use of private methods primarily, in order to 'lock away' the implentation details of a method, such that the user only has to call a method and get an expected result without being concerned about how that result came to be calculated.  
+Modules are also a form of encapsulation, in that they can encapsulate groups of methods into a namespace to prevent clashing with other files, and secure that code in a separate location from the main code it may be inserted in.  An example of this is `pry`.  This is a module we include to help debug our programs.  We know how to use it, but we do not necessarily know or see the code in the module because it is stored separately from our main working code.
+
+## Polymorphism
+Polymorphism is the ability to have objects of different classes call the same method and achieve similar expected results through differing implementation.
+
+```
+class Snake
+  def move
+    slither
+  end
+end
+
+class Person
+  def move
+    walk
+  end
+end
+```
+
+Here we have a `Snake` object and a `Person` object, each can be called upon to move, however the implementation of the movement is completely different for each object.  Nevertheless, they could be grouped together if needed and expected to `move` as needed, for instance:
+
+`[Snake.new, Person.new].each(&:move)`
+
+#### Modules
+Modules are a grouping of methods that can be inserted as needed across classes that are not on the same branches of the inheritance tree.  This allows us to DRY up our code by avoiding repetition in classes that wouldn't otherwise be able to inherit from each other.  
+Modules can also be used to namespace, or bundle classes under an umbrella, to avoid having name clashing issues with other code in system or gem files that may have methods of the same names as our code.
+
+```
+module Poison
+  def make_sick
+    "puking my guts out"
+  end
+end
+
+class Plant; end
+class Animal; end
+class PoisonIvy < Plant
+  include Poison
+end
+class Snake < Animal
+  include Poison
+end
+```
+
+#### Method lookup path
+If a local variable or method cannot be found in the current scope of the operation, ruby will look up the method lookup path to try to find a match prior to throwing an error.  The standard lookup path is:
+`.method->Module->Class->SuperClass->Object->Kernel->BasicObject`
+
+#### Self
+The `self` keyword references a different object depending on the scope it is called in.  In the class, outside of instance method definitions, it will reflect the class.  Within instance method definitions, `self` will refer to the calling object of the method.
+`self` is used when defining class methods, and when implicitly referencing the caller on instance methods (ie, setter methods).  We can chain methods to 
+`self` to access the calling object as well, ie `self.class` will return the class of the object it is called on. 
+
+#### Fake Operators and Equality
+Comparison and equality in Ruby are methods.  `<, <=, ==, >=, >` methods are found in the Comparable module.  They can either be individually defined in our classes, or if we want to include the whole group, we can simply define a `<=>` method while including the Comparable module, as this is the foundation it uses in the other methods listed above.
+
+## The `===` and `eql?` methods
+The `===` method is *not* a part of the Comparable module, and is used to determine a "is a type of" relationship.  This will return true if the argument on the right side of the operator is a 'type of' object on the left side of the operator.
+The `===` is used by `case` statements to determine equality in choosing the branch to execute.
+
+The `eql?` method returns a boolean based on whether the objects have the same value and are of the same class.
+
+#### Truthiness
+Everything has an implicitly truthy value except for `false` and `nil`.
